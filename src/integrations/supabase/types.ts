@@ -14,7 +14,171 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      competitions: {
+        Row: {
+          created_at: string
+          description: string | null
+          ends_at: string | null
+          id: number
+          starts_at: string | null
+          status: boolean | null
+          title: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          ends_at?: string | null
+          id?: number
+          starts_at?: string | null
+          status?: boolean | null
+          title?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          ends_at?: string | null
+          id?: number
+          starts_at?: string | null
+          status?: boolean | null
+          title?: string | null
+        }
+        Relationships: []
+      }
+      generated_images: {
+        Row: {
+          created_at: string
+          id: string
+          image_data: string
+          prompt: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_data: string
+          prompt: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_data?: string
+          prompt?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      submissions: {
+        Row: {
+          created_at: string
+          event_id: number | null
+          id: number
+          image_url: string | null
+          prompt: string | null
+          user_id: number | null
+        }
+        Insert: {
+          created_at?: string
+          event_id?: number | null
+          id?: number
+          image_url?: string | null
+          prompt?: string | null
+          user_id?: number | null
+        }
+        Update: {
+          created_at?: string
+          event_id?: number | null
+          id?: number
+          image_url?: string | null
+          prompt?: string | null
+          user_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submissions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "submissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          competitions_enrolled: number | null
+          created_at: string
+          email: string | null
+          email_id: string | null
+          full_name: string | null
+          id: number
+          username: string | null
+          winning_streak: number | null
+        }
+        Insert: {
+          competitions_enrolled?: number | null
+          created_at?: string
+          email?: string | null
+          email_id?: string | null
+          full_name?: string | null
+          id?: number
+          username?: string | null
+          winning_streak?: number | null
+        }
+        Update: {
+          competitions_enrolled?: number | null
+          created_at?: string
+          email?: string | null
+          email_id?: string | null
+          full_name?: string | null
+          id?: number
+          username?: string | null
+          winning_streak?: number | null
+        }
+        Relationships: []
+      }
+      votes: {
+        Row: {
+          created_at: string
+          id: number
+          submission_id: number | null
+          voter_id: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          submission_id?: number | null
+          voter_id?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          submission_id?: number | null
+          voter_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "votes_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "votes_voter_id_fkey"
+            columns: ["voter_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

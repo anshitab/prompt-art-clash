@@ -58,13 +58,12 @@ const ImageGenerator = () => {
         console.warn('User not logged in or Supabase auth not configured.');
       }
 
-      // Step 3: Save to Supabase
-      const { error: dbError } = await supabase.from('generated_images').insert([
+      // Step 3: Save to Supabase submissions table
+      const { error: dbError } = await supabase.from('submissions').insert([
         {
           prompt,
-          image_data: data.imageData,
-          created_at: new Date().toISOString(),
-          user_id: userId,
+          image_url: base64Image,
+          user_id: userId ? parseInt(userId) : null,
         },
       ]);
 
