@@ -23,17 +23,26 @@ const ImageGenerator = () => {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('generate-image', {
-        body: { prompt }
+      // Call FastAPI backend for image generation
+      const response = await fetch('http://localhost:8000/generate-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt })
       });
 
-      if (error) throw error;
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate image');
+      }
 
       if (data.success && data.imageData) {
         setGeneratedImage(`data:image/png;base64,${data.imageData}`);
         toast({
           title: "Success",
-          description: "Image generated successfully!",
+          description: data.description || "Image generated successfully!",
         });
       } else {
         throw new Error(data.error || 'Failed to generate image');
