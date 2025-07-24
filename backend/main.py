@@ -27,6 +27,10 @@ model = model.to(device)
 class PromptRequest(BaseModel):
     prompt: str
 
+@app.get("/")
+def read_root():
+    return {"message": "Image Generator API is running!"}
+
 @app.post("/generate-image")
 async def generate_image(req: PromptRequest):
     try:
