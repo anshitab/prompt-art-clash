@@ -3,61 +3,44 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { Zap, Trophy, Users, Palette } from 'lucide-react';
+import { Navbar } from '@/components/Navbar';
+import techArena from '@/assets/tech-arena.jpg';
 
 const Landing = () => {
   const todaysTheme = "Cyber Forest";
   const livePromptCount = 247; // This would come from real data
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header Navigation */}
-      <nav className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/60 rounded-lg flex items-center justify-center">
-                <Palette className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                  PromptClash
-                </h1>
-                <p className="text-xs text-muted-foreground">AI Art Battle Arena</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link to="/gallery">
-                <Button variant="ghost" size="sm">Gallery</Button>
-              </Link>
-              <Link to="/leaderboard">
-                <Button variant="ghost" size="sm">Leaderboard</Button>
-              </Link>
-              <Link to="/login">
-                <Button variant="outline" size="sm">Login</Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted">
+      <Navbar />
 
       {/* Hero Section */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-6xl mx-auto text-center space-y-8">
-          {/* Main Tagline */}
-          <div className="space-y-4">
-            <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-              PromptClash
-            </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground font-medium">
-              Submit your prompt. Watch it come alive.
-            </p>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              Two prompts enter, one image leaves. Battle other creators with AI-generated art. 
-              Let the community decide who has the most creative vision.
-            </p>
-          </div>
+      <div className="relative">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 opacity-20 bg-cover bg-center"
+          style={{ backgroundImage: `url(${techArena})` }}
+        />
+        <div className="relative container mx-auto px-4 py-16">
+          <div className="max-w-6xl mx-auto text-center space-y-8">
+            {/* Main Tagline */}
+            <div className="space-y-6">
+              <h1 className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-primary via-accent to-primary-glow bg-clip-text text-transparent">
+                PromptClash
+              </h1>
+              <div className="space-y-2">
+                <p className="text-2xl md:text-3xl text-foreground font-bold">
+                  Submit your prompt. Watch it come alive.
+                </p>
+                <div className="h-1 w-32 bg-gradient-to-r from-primary to-accent mx-auto rounded-full" />
+              </div>
+              <p className="text-lg text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+                Enter the ultimate AI art battle arena. Two prompts clash, one emerges victorious. 
+                Unleash your creativity, compete with masters, and let the community crown the champion.
+              </p>
+             </div>
 
-          {/* Today's Theme Card */}
+            {/* Today's Theme Card */}
           <Card className="max-w-md mx-auto bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
             <CardContent className="p-6 space-y-3">
               <div className="flex items-center justify-center space-x-2">
@@ -83,6 +66,7 @@ const Landing = () => {
                 View Gallery
               </Button>
             </Link>
+            </div>
           </div>
         </div>
       </div>
