@@ -68,6 +68,71 @@ export type Database = {
         }
         Relationships: []
       }
+      image_votes: {
+        Row: {
+          created_at: string
+          id: string
+          submission_id: number
+          voter_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          submission_id: number
+          voter_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          submission_id?: number
+          voter_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "image_votes_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          institute_name: string | null
+          role: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          institute_name?: string | null
+          role?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          institute_name?: string | null
+          role?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       submissions: {
         Row: {
           created_at: string
@@ -76,6 +141,8 @@ export type Database = {
           image_url: string | null
           prompt: string | null
           user_id: number | null
+          user_uuid: string | null
+          votes_count: number | null
         }
         Insert: {
           created_at?: string
@@ -84,6 +151,8 @@ export type Database = {
           image_url?: string | null
           prompt?: string | null
           user_id?: number | null
+          user_uuid?: string | null
+          votes_count?: number | null
         }
         Update: {
           created_at?: string
@@ -92,6 +161,8 @@ export type Database = {
           image_url?: string | null
           prompt?: string | null
           user_id?: number | null
+          user_uuid?: string | null
+          votes_count?: number | null
         }
         Relationships: [
           {
@@ -109,6 +180,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_profiles: {
+        Row: {
+          created_at: string | null
+          email: string
+          full_name: string
+          id: string
+          institute_name: string | null
+          role: string
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          full_name: string
+          id: string
+          institute_name?: string | null
+          role: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          institute_name?: string | null
+          role?: string
+        }
+        Relationships: []
       }
       users: {
         Row: {
