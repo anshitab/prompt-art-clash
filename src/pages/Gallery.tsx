@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Palette, Heart, Clock, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { Navbar } from '@/components/Navbar';
+import { VotingSystem } from '@/components/VotingSystem';
 
 interface Submission {
   id: number;
@@ -13,6 +15,7 @@ interface Submission {
   image_url: string;
   created_at: string;
   user_id: number | null;
+  votes_count: number | null;
 }
 
 const Gallery = () => {
@@ -63,38 +66,7 @@ const Gallery = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <nav className="border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link to="/">
-                <Button variant="ghost" size="sm">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Home
-                </Button>
-              </Link>
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/60 rounded flex items-center justify-center">
-                  <Palette className="w-4 h-4 text-primary-foreground" />
-                </div>
-                <span className="font-semibold text-foreground">Gallery</span>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link to="/generate">
-                <Button variant="default" size="sm">
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Create Art
-                </Button>
-              </Link>
-              <Link to="/leaderboard">
-                <Button variant="ghost" size="sm">Leaderboard</Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Gallery Header */}
       <div className="container mx-auto px-4 py-6 border-b border-border">
@@ -181,10 +153,11 @@ const Gallery = () => {
                     </p>
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <span>{formatDate(submission.created_at)}</span>
-                      <Badge variant="outline" className="text-xs">
-                        <Heart className="w-3 h-3 mr-1" />
-                        Vote
-                      </Badge>
+                      <VotingSystem 
+                        submissionId={submission.id} 
+                        initialVotes={submission.votes_count || 0}
+                        className="text-xs"
+                      />
                     </div>
                   </div>
                 </CardContent>

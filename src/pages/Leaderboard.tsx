@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Palette, Trophy, Crown, Medal, Star } from 'lucide-react';
+import { Navbar } from '@/components/Navbar';
 
 const Leaderboard = () => {
   // Mock data - would come from Supabase in real app
@@ -42,35 +43,7 @@ const Leaderboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <nav className="border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link to="/">
-                <Button variant="ghost" size="sm">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Home
-                </Button>
-              </Link>
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/60 rounded flex items-center justify-center">
-                  <Trophy className="w-4 h-4 text-primary-foreground" />
-                </div>
-                <span className="font-semibold text-foreground">Leaderboard</span>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link to="/generate">
-                <Button variant="default" size="sm">Create Art</Button>
-              </Link>
-              <Link to="/gallery">
-                <Button variant="ghost" size="sm">Gallery</Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Leaderboard Header */}
       <div className="container mx-auto px-4 py-8">
