@@ -1,0 +1,24 @@
+# Core server & typing
+fastapi
+uvicorn[standard]
+pydantic
+
+# ML & image generation
+diffusers
+transformers
+torch
+numpy
+pillow
+
+# Optional (but highly recommended for HuggingFace models)
+huggingface-hub
+requests
+
+# CORS support
+python-multipart
+
+# If using CPU only (most Codespaces):
+accelerate
+
+# For progress bars (often used by transformers/diffusers)
+tqdm
