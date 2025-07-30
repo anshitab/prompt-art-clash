@@ -1,19 +1,62 @@
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Palette, Trophy, Crown, Medal, Star } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabaseClient'; 
+import { cn } from '@/lib/utils'; 
 
 const Leaderboard = () => {
-  // Mock data - would come from Supabase in real app
-  const topCreators = [
-    { rank: 1, name: "ArtMaster", submissions: 42, votes: 1247, streak: 7 },
-    { rank: 2, name: "PromptWizard", submissions: 38, votes: 1156, streak: 5 },
-    { rank: 3, name: "CreativeAI", submissions: 35, votes: 1089, streak: 3 },
-    { rank: 4, name: "PixelPoet", submissions: 31, votes: 892, streak: 4 },
-    { rank: 5, name: "DreamCrafter", submissions: 28, votes: 734, streak: 2 },
-  ];
+  type Creator = {
+    id: string;
+    username: string;
+    submissions_count: number;
+    votes_count: number;
+    streak: number;
+    rank?: number;
+  };
+
+  const [topCreators, setTopCreators] = useState<Creator[]>([]);
+
+  useEffect(() => {
+    const fetchLeaderboard = async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, username, submissions_count, votes_count, streak")
+        .order("votes_count", { ascending: false })
+        .limit(10);
+
+      if (error) {
+        console.error("Error fetching leaderboard:", error);
+      } else {
+        const ranked = data.map((creator, i) => ({ ...creator, rank: i + 1 }));
+        setTopCreators(ranked);
+      }
+    };
+
+    fetchLeaderboard();
+
+    const subscription = supabase
+      .channel('leaderboard-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profiles',
+        },
+        () => {
+          fetchLeaderboard();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(subscription);
+    };
+  }, []);
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -44,8 +87,6 @@ const Leaderboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-
-      {/* Leaderboard Header */}
       <div className="container mx-auto px-4 py-8">
         <div className="text-center space-y-4 mb-12">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
@@ -57,7 +98,6 @@ const Leaderboard = () => {
         </div>
 
         <div className="max-w-4xl mx-auto space-y-6">
-          {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Card className="text-center">
               <CardHeader className="pb-3">
@@ -88,7 +128,6 @@ const Leaderboard = () => {
             </Card>
           </div>
 
-          {/* Top Creators */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -105,16 +144,16 @@ const Leaderboard = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                       <div className="flex items-center space-x-2">
-                        {getRankIcon(creator.rank)}
+                        {getRankIcon(creator.rank!)}
                         <span className="text-2xl font-bold text-muted-foreground">
                           #{creator.rank}
                         </span>
                       </div>
                       <div>
-                        <h3 className="font-semibold text-lg">{creator.name}</h3>
+                        <h3 className="font-semibold text-lg">{creator.username}</h3>
                         <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                          <span>{creator.submissions} submissions</span>
-                          <span>{creator.votes} votes</span>
+                          <span>{creator.submissions_count} submissions</span>
+                          <span>{creator.votes_count} votes</span>
                           <Badge variant="outline" className="text-xs">
                             {creator.streak} day streak
                           </Badge>
@@ -123,7 +162,7 @@ const Leaderboard = () => {
                     </div>
                     <div className="text-right">
                       <div className="text-lg font-bold text-primary">
-                        {creator.votes}
+                        {creator.votes_count}
                       </div>
                       <div className="text-xs text-muted-foreground">total votes</div>
                     </div>
@@ -133,7 +172,6 @@ const Leaderboard = () => {
             </CardContent>
           </Card>
 
-          {/* Call to Action */}
           <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
             <CardContent className="p-8 text-center space-y-4">
               <h2 className="text-2xl font-bold text-primary">Ready to Join the Leaderboard?</h2>
