@@ -5,16 +5,18 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Palette, Trophy, Crown, Medal, Star } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabaseClient'; 
+import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils'; 
 
 const Leaderboard = () => {
   type Creator = {
     id: string;
-    username: string;
-    submissions_count: number;
+    user_id: string;
+    full_name: string;
+    institute_name: string;
+    avatar_url: string | null;
+    role: string;
     votes_count: number;
-    streak: number;
     rank?: number;
   };
 
@@ -23,15 +25,15 @@ const Leaderboard = () => {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       const { data, error } = await supabase
-        .from("profiles")
-        .select("id, username, submissions_count, votes_count, streak")
-        .order("votes_count", { ascending: false })
-        .limit(10);
+      .from("user_profiles")
+      .select("id, user_id, full_name, institute_name, avatar_url, role, votes_count")
+      .order("votes_count", { ascending: false })
+      .limit(10);
 
       if (error) {
         console.error("Error fetching leaderboard:", error);
       } else {
-        const ranked = data.map((creator, i) => ({ ...creator, rank: i + 1 }));
+        const ranked = data.map((creator: Creator, i: number) => ({ ...creator, rank: i + 1 }));
         setTopCreators(ranked);
       }
     };
@@ -104,7 +106,7 @@ const Leaderboard = () => {
                 <CardTitle className="text-lg">Total Battles</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-primary">1,247</div>
+                <div className="text-3xl font-bold text-primary">0</div>
                 <p className="text-sm text-muted-foreground mt-1">This month</p>
               </CardContent>
             </Card>
@@ -113,7 +115,7 @@ const Leaderboard = () => {
                 <CardTitle className="text-lg">Active Creators</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-primary">423</div>
+                <div className="text-3xl font-bold text-primary">0</div>
                 <p className="text-sm text-muted-foreground mt-1">Last 7 days</p>
               </CardContent>
             </Card>
@@ -122,7 +124,7 @@ const Leaderboard = () => {
                 <CardTitle className="text-lg">Images Created</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-primary">8,934</div>
+                <div className="text-3xl font-bold text-primary">0</div>
                 <p className="text-sm text-muted-foreground mt-1">All time</p>
               </CardContent>
             </Card>
@@ -150,13 +152,14 @@ const Leaderboard = () => {
                         </span>
                       </div>
                       <div>
-                        <h3 className="font-semibold text-lg">{creator.username}</h3>
+                      {creator.avatar_url && (
+                      <img src={creator.avatar_url} alt="avatar" className="w-8 h-8 rounded-full mr-2" />
+            )}
+                      <h3 className="font-semibold text-lg">{creator.full_name}</h3>
                         <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                          <span>{creator.submissions_count} submissions</span>
+                          <span>{creator.institute_name}</span>
                           <span>{creator.votes_count} votes</span>
-                          <Badge variant="outline" className="text-xs">
-                            {creator.streak} day streak
-                          </Badge>
+                          <span>{creator.role}</span>
                         </div>
                       </div>
                     </div>

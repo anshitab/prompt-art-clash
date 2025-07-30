@@ -35,7 +35,7 @@ const Landing = () => {
                 <div className="h-1 w-32 bg-gradient-to-r from-primary to-accent mx-auto rounded-full" />
               </div>
               <p className="text-lg text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-                Enter the ultimate AI art battle arena. Two prompts clash, one emerges victorious. 
+                Enter the ultimate AI art battle arena. 
                 Unleash your creativity, compete with masters, and let the community crown the champion.
               </p>
              </div>
@@ -74,7 +74,7 @@ const Landing = () => {
       {/* Features Section */}
       <div className="container mx-auto px-4 py-12 border-t border-border">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">How PromptClash Works</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">How Prompt Arena Works</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="text-center">
               <CardContent className="p-6 space-y-4">
@@ -83,7 +83,7 @@ const Landing = () => {
                 </div>
                 <h3 className="text-xl font-semibold">Submit Your Prompt</h3>
                 <p className="text-muted-foreground">
-                  Enter a creative text prompt based on today's theme. Let your imagination run wild!
+                  Enter a creative text prompt based on the theme. Let your imagination run wild!
                 </p>
               </CardContent>
             </Card>
@@ -120,19 +120,19 @@ const Landing = () => {
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div className="space-y-2">
-              <div className="text-3xl font-bold text-primary">1,247</div>
+              <div className="text-3xl font-bold text-primary">0</div>
               <div className="text-sm text-muted-foreground">Images Generated</div>
             </div>
             <div className="space-y-2">
-              <div className="text-3xl font-bold text-primary">423</div>
+              <div className="text-3xl font-bold text-primary">0</div>
               <div className="text-sm text-muted-foreground">Active Creators</div>
             </div>
             <div className="space-y-2">
-              <div className="text-3xl font-bold text-primary">89</div>
+              <div className="text-3xl font-bold text-primary">0</div>
               <div className="text-sm text-muted-foreground">Battles Today</div>
             </div>
             <div className="space-y-2">
-              <div className="text-3xl font-bold text-primary">15</div>
+              <div className="text-3xl font-bold text-primary">0</div>
               <div className="text-sm text-muted-foreground">Themes Explored</div>
             </div>
           </div>
@@ -147,7 +147,7 @@ const Landing = () => {
               <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/60 rounded flex items-center justify-center">
                 <Palette className="w-4 h-4 text-primary-foreground" />
               </div>
-              <span className="font-semibold text-foreground">PromptClash</span>
+              <span className="font-semibold text-foreground">Prompt Arena</span>
             </div>
             <div className="flex space-x-6 text-sm text-muted-foreground">
               <Link to="/about" className="hover:text-foreground transition-colors">About</Link>
