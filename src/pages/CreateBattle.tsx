@@ -90,7 +90,7 @@ const CreateBattle = () => {
       }
 
       const { data, error } = await supabase
-        .from('battles')
+        .from('battles' as any)
         .insert([{
           ...formData,
           created_by: user.id,

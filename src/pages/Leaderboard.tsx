@@ -15,7 +15,7 @@ const Leaderboard = () => {
     institute_name: string;
     avatar_url: string | null;
     role: string;
-    votes_count: number;
+    submissions_count: number;
     created_at: string;
     rank?: number;
   };
@@ -41,9 +41,9 @@ const Leaderboard = () => {
         setError(null);
         
         const { data, error } = await supabase
-          .from("profiles")
-          .select("id, user_id, full_name, institute_name, avatar_url, role, votes_count, created_at")
-          .order("votes_count", { ascending: false })
+          .from("profiles" as any)
+          .select("id, user_id, full_name, institute_name, avatar_url, role, submissions_count, created_at")
+          .order("submissions_count", { ascending: false })
           .limit(10);
 
         if (error) {
@@ -57,7 +57,7 @@ const Leaderboard = () => {
           return;
         }
         
-        const ranked = (data as Creator[]).map((creator, i) => ({
+        const ranked = (data as any as Creator[]).map((creator, i) => ({
           ...creator,
           rank: i + 1,
         }));
@@ -79,16 +79,16 @@ const Leaderboard = () => {
 
         // Get active creators (users with votes > 0)
         const { count: activeCreators } = await supabase
-          .from('profiles')
+          .from('profiles' as any)
           .select('*', { count: 'exact', head: true })
-          .gt('votes_count', 0);
+          .gt('submissions_count', 0);
 
         // Get total votes as proxy for images/artworks created
         const { data: votesData } = await supabase
-          .from('profiles')
-          .select('votes_count');
+          .from('profiles' as any)
+          .select('submissions_count');
         
-        const totalVotes = votesData?.reduce((sum, user) => sum + (user.votes_count || 0), 0) || 0;
+        const totalVotes = (votesData as any)?.reduce((sum: number, user: any) => sum + (user.submissions_count || 0), 0) || 0;
 
         setStatistics({
           totalBattles: totalUsers || 0,
@@ -251,16 +251,16 @@ const Leaderboard = () => {
                           <div className="flex items-center space-x-4 text-sm text-black">
                             <span>{creator.institute_name}</span>
                             <span>{creator.role}</span>
-                            <span>{creator.votes_count} votes</span>
+                            <span>{creator.submissions_count} submissions</span>
                           </div>
                         </div>
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="text-lg font-bold text-primary">
-                        {creator.votes_count}
+                        {creator.submissions_count}
                       </div>
-                      <div className="text-xs text-black">total votes</div>
+                      <div className="text-xs text-black">submissions</div>
                     </div>
                   </div>
                 </div>

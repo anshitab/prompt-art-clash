@@ -50,12 +50,12 @@ const JoinCompetition = () => {
     setError(null);
     try {
       const { data, error } = await supabase
-        .from('battles')
+        .from('battles' as any)
         .select('*')
         .order('start_time', { ascending: true });
       
       if (error) throw error;
-      setBattles(data || []);
+      setBattles((data as any) || []);
     } catch (err: any) {
       setError(err.message || 'Failed to load competitions.');
     } finally {
@@ -69,12 +69,12 @@ const JoinCompetition = () => {
       if (!user) return;
 
       const { data, error } = await supabase
-        .from('battle_participants')
+        .from('battle_participants' as any)
         .select('battle_id')
         .eq('user_id', user.id);
 
       if (!error && data) {
-        setUserParticipations(new Set(data.map(p => p.battle_id)));
+        setUserParticipations(new Set((data as any)?.map((p: any) => p.battle_id) || []));
       }
     } catch (error) {
       console.error('Error fetching user participations:', error);
@@ -95,7 +95,7 @@ const JoinCompetition = () => {
       }
 
       const { error } = await supabase
-        .from('battle_participants')
+        .from('battle_participants' as any)
         .insert([{ battle_id: battleId, user_id: user.id }]);
 
       if (error) {
