@@ -26,7 +26,7 @@ const Landing = () => {
             {/* Main Tagline */}
             <div className="space-y-6">
               <h1 className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-primary via-accent to-primary-glow bg-clip-text text-transparent">
-                PromptClash
+                PromptArtClash
               </h1>
               <div className="space-y-2">
                 <p className="text-2xl md:text-3xl text-foreground font-bold">

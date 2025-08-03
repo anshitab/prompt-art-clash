@@ -69,7 +69,7 @@ export const Navbar = () => {
             </div>
             <div>
               <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                PromptClash
+                PromptArtClash
               </h1>
               <p className="text-xs text-muted-foreground">AI Art Battle Arena</p>
             </div>

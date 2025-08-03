@@ -83,7 +83,7 @@ const Signup = () => {
             <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/60 rounded flex items-center justify-center">
               <Palette className="w-4 h-4 text-primary-foreground" />
             </div>
-            <span className="font-semibold text-foreground">PromptClash</span>
+            <span className="font-semibold text-foreground">PromptArtClash</span>
           </div>
         </div>
 

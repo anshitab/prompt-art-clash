@@ -2,9 +2,10 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Palette } from 'lucide-react';
+import { ArrowLeft, Palette, Image as ImageIcon } from 'lucide-react';
 import ImageGenerator from '@/components/ImageGenerator';
 import { Navbar } from '@/components/Navbar';
+import cyberForestRef from '@/assets/cyber-forest-reference.jpg';
 
 const Generate = () => {
   const todaysTheme = "Cyber Forest";
@@ -19,9 +20,27 @@ const Generate = () => {
           <div className="text-center space-y-2">
             <Badge variant="secondary" className="font-mono">TODAY'S THEME</Badge>
             <h1 className="text-3xl font-bold text-primary">{todaysTheme}</h1>
-            <p className="text-muted-foreground">
-              Create something amazing with today's theme. Let your creativity flow!
-            </p>
+            <div className="max-w-2xl mx-auto space-y-4">
+              <p className="text-muted-foreground text-lg">
+                Dive into a world where nature meets technology! Create stunning art that blends organic forest elements with futuristic cyberpunk aesthetics. Think glowing trees, digital foliage, holographic wildlife, and bioluminescent plants in a high-tech environment.
+              </p>
+              
+              {/* Reference Image */}
+              <div className="bg-card/50 rounded-lg p-4 border border-primary/20">
+                <div className="flex items-center space-x-2 mb-3">
+                  <ImageIcon className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium text-primary">Reference Inspiration</span>
+                </div>
+                <img 
+                  src={cyberForestRef} 
+                  alt="Cyber Forest Reference" 
+                  className="w-full h-48 object-cover rounded-md"
+                />
+                <p className="text-xs text-muted-foreground mt-2">
+                  Use this as inspiration for your "{todaysTheme}" prompt. Create your own unique interpretation!
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
