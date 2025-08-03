@@ -46,6 +46,10 @@ const Gallery = () => {
       if (error) {
         console.error('Error fetching submissions:', error);
       } else {
+        console.log('Fetched submissions:', data?.length || 0);
+        if (data && data.length > 0) {
+          console.log('First submission image URL length:', data[0].image_url?.length || 0);
+        }
         setSubmissions(data || []);
       }
     } catch (error) {
@@ -139,12 +143,16 @@ const Gallery = () => {
                       src={submission.image_url}
                       alt="AI Generated Art"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        console.error('Image failed to load:', submission.image_url);
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                      }}
                     />
-                  ) : (
-                    <div className="w-full h-full bg-muted flex items-center justify-center">
-                      <Palette className="w-8 h-8 text-muted-foreground" />
-                    </div>
-                  )}
+                  ) : null}
+                  <div className={`w-full h-full bg-muted flex items-center justify-center ${submission.image_url ? 'hidden' : ''}`}>
+                    <Palette className="w-8 h-8 text-muted-foreground" />
+                  </div>
                 </div>
                 <CardContent className="p-4 space-y-3">
                   <div className="space-y-2">

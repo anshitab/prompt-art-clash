@@ -1,12 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Palette, Trophy, Crown, Medal, Star } from 'lucide-react';
+import { Trophy, Crown, Medal, Star, Palette, Loader2, AlertCircle } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { cn } from '@/lib/utils'; 
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const Leaderboard = () => {
   type Creator = {
@@ -17,49 +16,115 @@ const Leaderboard = () => {
     avatar_url: string | null;
     role: string;
     votes_count: number;
+    created_at: string;
     rank?: number;
   };
 
-  const [topCreators, setTopCreators] = useState<Creator[]>([]);
+  type Statistics = {
+    totalBattles: number;
+    activeCreators: number;
+    imagesCreated: number;
+  };
 
+  const [topCreators, setTopCreators] = useState<Creator[]>([]);
+  const [statistics, setStatistics] = useState<Statistics>({
+    totalBattles: 0,
+    activeCreators: 0,
+    imagesCreated: 0
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     const fetchLeaderboard = async () => {
-      const { data, error } = await supabase
-      .from("user_profiles")
-      .select("id, user_id, full_name, institute_name, avatar_url, role, votes_count")
-      .order("votes_count", { ascending: false })
-      .limit(10);
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("id, user_id, full_name, institute_name, avatar_url, role, votes_count, created_at")
+          .order("votes_count", { ascending: false })
+          .limit(10);
 
-      if (error) {
-        console.error("Error fetching leaderboard:", error);
-      } else {
-        const ranked = data.map((creator: Creator, i: number) => ({ ...creator, rank: i + 1 }));
+        if (error) {
+          console.error("Error fetching leaderboard:", error);
+          setError("Failed to load leaderboard data. Please try again later.");
+          return;
+        } 
+        
+        if (!data) {
+          setTopCreators([]);
+          return;
+        }
+        
+        const ranked = (data as Creator[]).map((creator, i) => ({
+          ...creator,
+          rank: i + 1,
+        }));
         setTopCreators(ranked);
+      } catch (err) {
+        console.error("Unexpected error:", err);
+        setError("An unexpected error occurred. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchStatistics = async () => {
+      try {
+        // Get total user count
+        const { count: totalUsers } = await supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true });
+
+        // Get active creators (users with votes > 0)
+        const { count: activeCreators } = await supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true })
+          .gt('votes_count', 0);
+
+        // Get total votes as proxy for images/artworks created
+        const { data: votesData } = await supabase
+          .from('profiles')
+          .select('votes_count');
+        
+        const totalVotes = votesData?.reduce((sum, user) => sum + (user.votes_count || 0), 0) || 0;
+
+        setStatistics({
+          totalBattles: totalUsers || 0,
+          activeCreators: activeCreators || 0,
+          imagesCreated: totalVotes
+        });
+      } catch (err) {
+        console.error("Error fetching statistics:", err);
+        // Keep default values if statistics fail
       }
     };
 
     fetchLeaderboard();
+    fetchStatistics();
 
-    const subscription = supabase
+    const channel = supabase
       .channel('leaderboard-updates')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'profiles',
-        },
+          table: 'profiles', // Fixed: using correct table name
+        }, 
         () => {
           fetchLeaderboard();
+          fetchStatistics();
         }
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(subscription);
+      supabase.removeChannel(channel);
     };
   }, []);
-
+    
   const getRankIcon = (rank: number) => {
     switch (rank) {
       case 1:
@@ -103,11 +168,13 @@ const Leaderboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Card className="text-center">
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Total Battles</CardTitle>
+                <CardTitle className="text-lg">Total Creators</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-primary">0</div>
-                <p className="text-sm text-muted-foreground mt-1">This month</p>
+                <div className="text-3xl font-bold text-primary">
+                  {loading ? <Loader2 className="w-8 h-8 animate-spin mx-auto" /> : statistics.totalBattles}
+                </div>
+                <p className="text-sm text-muted-foreground mt-1">All time</p>
               </CardContent>
             </Card>
             <Card className="text-center">
@@ -115,17 +182,21 @@ const Leaderboard = () => {
                 <CardTitle className="text-lg">Active Creators</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-primary">0</div>
-                <p className="text-sm text-muted-foreground mt-1">Last 7 days</p>
+                <div className="text-3xl font-bold text-primary">
+                  {loading ? <Loader2 className="w-8 h-8 animate-spin mx-auto" /> : statistics.activeCreators}
+                </div>
+                <p className="text-sm text-muted-foreground mt-1">With votes</p>
               </CardContent>
             </Card>
             <Card className="text-center">
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Images Created</CardTitle>
+                <CardTitle className="text-lg">Total Votes</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-primary">0</div>
-                <p className="text-sm text-muted-foreground mt-1">All time</p>
+                <div className="text-3xl font-bold text-primary">
+                  {loading ? <Loader2 className="w-8 h-8 animate-spin mx-auto" /> : statistics.imagesCreated}
+                </div>
+                <p className="text-sm text-muted-foreground mt-1">Community wide</p>
               </CardContent>
             </Card>
           </div>
@@ -138,7 +209,23 @@ const Leaderboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {topCreators.map((creator) => (
+              {error && (
+                <Alert>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              {loading && !error && (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="w-8 h-8 animate-spin" />
+                </div>
+              )}
+              {!loading && !error && topCreators.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  No creators found. Be the first to join!
+                </div>
+              )}
+              {!loading && !error && topCreators.map((creator) => (
                 <div
                   key={creator.rank}
                   className={`p-4 rounded-lg border ${getRankStyle(creator.rank)}`}
@@ -147,19 +234,25 @@ const Leaderboard = () => {
                     <div className="flex items-center space-x-4">
                       <div className="flex items-center space-x-2">
                         {getRankIcon(creator.rank!)}
-                        <span className="text-2xl font-bold text-muted-foreground">
+                        <span className="text-2xl font-bold text-black">
                           #{creator.rank}
                         </span>
                       </div>
-                      <div>
-                      {creator.avatar_url && (
-                      <img src={creator.avatar_url} alt="avatar" className="w-8 h-8 rounded-full mr-2" />
-            )}
-                      <h3 className="font-semibold text-lg">{creator.full_name}</h3>
-                        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                          <span>{creator.institute_name}</span>
-                          <span>{creator.votes_count} votes</span>
-                          <span>{creator.role}</span>
+                      <div className="flex items-center space-x-3">
+                        {creator.avatar_url && (
+                          <img 
+                            src={creator.avatar_url} 
+                            alt={`${creator.full_name}'s avatar`} 
+                            className="w-10 h-10 rounded-full object-cover" 
+                          />
+                        )}
+                        <div>
+                          <h3 className="font-semibold text-lg text-black">{creator.full_name}</h3>
+                          <div className="flex items-center space-x-4 text-sm text-black">
+                            <span>{creator.institute_name}</span>
+                            <span>{creator.role}</span>
+                            <span>{creator.votes_count} votes</span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -167,7 +260,7 @@ const Leaderboard = () => {
                       <div className="text-lg font-bold text-primary">
                         {creator.votes_count}
                       </div>
-                      <div className="text-xs text-muted-foreground">total votes</div>
+                      <div className="text-xs text-black">total votes</div>
                     </div>
                   </div>
                 </div>

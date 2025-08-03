@@ -21,6 +21,7 @@ import NotFound from "./pages/NotFound";
 import RoleSelector from './RoleSelector';
 import CreateBattle from './CreateBattle';
 import Participate from './Participate';
+import JoinCompetition from './pages/JoinCompetition';
 
 const queryClient = new QueryClient();
 
@@ -42,20 +43,69 @@ const App = () => {
             <Routes>
               {/* Common routes */}
               <Route path="/" element={<Landing />} />
-              <Route path="/generate" element={<Generate />} />
-              <Route path="/gallery" element={<Gallery />} />
-              <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/demo" element={<Index />} />
+              
+              {/* Participant-only routes */}
+              <Route 
+                path="/generate" 
+                element={
+                  (role === "user" || role === "participant" || !role) ? (
+                    <Generate />
+                  ) : (
+                    <Navigate to="/select-role" />
+                  )
+                } 
+              />
+              <Route 
+                path="/gallery" 
+                element={
+                  (role === "user" || role === "participant" || !role) ? (
+                    <Gallery />
+                  ) : (
+                    <Navigate to="/select-role" />
+                  )
+                } 
+              />
+              <Route 
+                path="/leaderboard" 
+                element={
+                  (role === "user" || role === "participant" || !role) ? (
+                    <Leaderboard />
+                  ) : (
+                    <Navigate to="/select-role" />
+                  )
+                } 
+              />
+              <Route 
+                path="/join-competition" 
+                element={
+                  (role === "user" || role === "participant" || !role) ? (
+                    <JoinCompetition />
+                  ) : (
+                    <Navigate to="/select-role" />
+                  )
+                } 
+              />
 
               {/* Role selection & protected routes */}
               <Route path="/select-role" element={<RoleSelector />} />
               <Route
                 path="/create-battle"
                 element={
-                  role === "institute" ? (
+                  (role === "institute" || role === "host") ? (
+                    <CreateBattle />
+                  ) : (
+                    <Navigate to="/select-role" />
+                  )
+                }
+              />
+              <Route
+                path="/create-competition"
+                element={
+                  (role === "institute" || role === "host") ? (
                     <CreateBattle />
                   ) : (
                     <Navigate to="/select-role" />
@@ -65,7 +115,7 @@ const App = () => {
               <Route
                 path="/participate"
                 element={
-                  role === "participant" ? (
+                  (role === "participant" || role === "user") ? (
                     <Participate />
                   ) : (
                     <Navigate to="/select-role" />

@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Palette, Mail, Lock, User, Building, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -16,11 +17,11 @@ const Signup = () => {
   const [instituteName, setInstituteName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [mode, setMode] = useState<'participant' | 'host'>('participant'); // New
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if user is already logged in
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
@@ -45,7 +46,8 @@ const Signup = () => {
           emailRedirectTo: redirectUrl,
           data: {
             full_name: fullName,
-            institute_name: instituteName,
+            institute_name: mode === 'host' ? instituteName : '',
+            role: mode, // Save the mode in metadata
           }
         }
       });
@@ -85,113 +87,143 @@ const Signup = () => {
           </div>
         </div>
 
-        {/* Signup Form */}
+        {/* Mode Switch */}
+        <div className="flex justify-center mb-6 space-x-4">
+          <Button
+            variant={mode === 'participant' ? 'default' : 'outline'}
+            onClick={() => setMode('participant')}
+          >
+            Participant
+          </Button>
+          <Button
+            variant={mode === 'host' ? 'default' : 'outline'}
+            onClick={() => setMode('host')}
+          >
+            Host
+          </Button>
+        </div>
+
+        {/* Animated Signup Form */}
         <div className="max-w-md mx-auto">
-          <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
-            <CardHeader className="text-center space-y-2">
-              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                Join PromptClash
-              </CardTitle>
-              <p className="text-muted-foreground">
-                Create your account and start competing
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={mode} // triggers animation on mode change
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              transition={{ duration: 0.4 }}
+            >
+              <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
+                <CardHeader className="text-center space-y-2">
+                  <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                    {mode === 'participant' ? 'Join as Participant' : 'Register as Host'}
+                  </CardTitle>
+                  <p className="text-muted-foreground">
+                    {mode === 'participant'
+                      ? 'Compete in exciting AI battles'
+                      : 'Create and manage your own battles'}
+                  </p>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {error && (
+                    <Alert variant="destructive">
+                      <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                  )}
 
-              <form onSubmit={handleSignup} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="fullName" className="text-sm font-medium">
-                    Full Name
-                  </Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="fullName"
-                      type="text"
-                      placeholder="Enter your full name"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
+                  <form onSubmit={handleSignup} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="fullName" className="text-sm font-medium">
+                        Full Name
+                      </Label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="fullName"
+                          type="text"
+                          placeholder="Enter your full name"
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          className="pl-10"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {mode === 'host' && (
+                      <div className="space-y-2">
+                        <Label htmlFor="instituteName" className="text-sm font-medium">
+                          Institute/Organization
+                        </Label>
+                        <div className="relative">
+                          <Building className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="instituteName"
+                            type="text"
+                            placeholder="Enter your institute name"
+                            value={instituteName}
+                            onChange={(e) => setInstituteName(e.target.value)}
+                            className="pl-10"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-sm font-medium">
+                        Email Address
+                      </Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="Enter your email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="pl-10"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="password" className="text-sm font-medium">
+                        Password
+                      </Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="password"
+                          type="password"
+                          placeholder="Create a strong password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="pl-10"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      className="w-full font-semibold"
+                      disabled={loading}
+                    >
+                      {loading ? "Creating Account..." : "Create Account"}
+                    </Button>
+                  </form>
+
+                  <div className="text-center text-sm">
+                    <span className="text-muted-foreground">Already have an account? </span>
+                    <Link to="/login" className="text-primary hover:underline font-medium">
+                      Sign In
+                    </Link>
                   </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="instituteName" className="text-sm font-medium">
-                    Institute/Organization
-                  </Label>
-                  <div className="relative">
-                    <Building className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="instituteName"
-                      type="text"
-                      placeholder="Enter your institute name"
-                      value={instituteName}
-                      onChange={(e) => setInstituteName(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-medium">
-                    Email Address
-                  </Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="Enter your email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-medium">
-                    Password
-                  </Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="Create a strong password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full font-semibold"
-                  disabled={loading}
-                >
-                  {loading ? "Creating Account..." : "Create Account"}
-                </Button>
-              </form>
-
-              <div className="text-center text-sm">
-                <span className="text-muted-foreground">Already have an account? </span>
-                <Link to="/login" className="text-primary hover:underline font-medium">
-                  Sign In
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </div>

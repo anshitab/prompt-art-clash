@@ -8,17 +8,18 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Palette, Mail, Lock, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [mode, setMode] = useState<'participant' | 'host'>('participant');
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if user is already logged in
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
@@ -43,7 +44,7 @@ const Login = () => {
         setError(error.message);
       } else {
         toast({
-          title: "Welcome back!",
+          title: `Welcome back ${mode === 'host' ? 'Host' : 'Participant'}!`,
           description: "Successfully logged in to PromptClash.",
         });
         navigate('/');
@@ -74,77 +75,105 @@ const Login = () => {
           </div>
         </div>
 
+        {/* Toggle Buttons */}
+        <div className="flex justify-center mb-6 space-x-4">
+          <Button
+            variant={mode === 'participant' ? 'default' : 'outline'}
+            onClick={() => setMode('participant')}
+          >
+            Participant
+          </Button>
+          <Button
+            variant={mode === 'host' ? 'default' : 'outline'}
+            onClick={() => setMode('host')}
+          >
+            Host
+          </Button>
+        </div>
+
         {/* Login Form */}
         <div className="max-w-md mx-auto">
-          <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
-            <CardHeader className="text-center space-y-2">
-              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                Welcome Back
-              </CardTitle>
-              <p className="text-muted-foreground">
-                Enter your credentials to access your account
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
+          <Card className="border-border/50 bg-card/80 backdrop-blur-sm overflow-hidden">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={mode} // key changes to trigger animation
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.4 }}
+              >
+                <CardHeader className="text-center space-y-2">
+                  <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                    {mode === 'participant' ? 'Participant Login' : 'Host Login'}
+                  </CardTitle>
+                  <p className="text-muted-foreground">
+                    {mode === 'participant'
+                      ? 'Join battles and start creating!'
+                      : 'Host battles and manage participants.'}
+                  </p>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {error && (
+                    <Alert variant="destructive">
+                      <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                  )}
 
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-medium">
-                    Email Address
-                  </Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="Enter your email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
+                  <form onSubmit={handleLogin} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-sm font-medium">
+                        Email Address
+                      </Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="Enter your email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="pl-10"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="password" className="text-sm font-medium">
+                        Password
+                      </Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="password"
+                          type="password"
+                          placeholder="Enter your password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="pl-10"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      className="w-full font-semibold"
+                      disabled={loading}
+                    >
+                      {loading ? "Signing in..." : `Sign in as ${mode}`}
+                    </Button>
+                  </form>
+
+                  <div className="text-center text-sm">
+                    <span className="text-muted-foreground">Don't have an account? </span>
+                    <Link to="/signup" className="text-primary hover:underline font-medium">
+                      Create Account
+                    </Link>
                   </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-medium">
-                    Password
-                  </Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full font-semibold"
-                  disabled={loading}
-                >
-                  {loading ? "Signing in..." : "Sign In"}
-                </Button>
-              </form>
-
-              <div className="text-center text-sm">
-                <span className="text-muted-foreground">Don't have an account? </span>
-                <Link to="/signup" className="text-primary hover:underline font-medium">
-                  Create Account
-                </Link>
-              </div>
-            </CardContent>
+                </CardContent>
+              </motion.div>
+            </AnimatePresence>
           </Card>
         </div>
       </div>

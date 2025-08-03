@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
-import { Palette, User, LogOut, Building, Trophy } from 'lucide-react';
+import { Palette, User, LogOut, Building, Trophy, Sparkles } from 'lucide-react';
 import { useAuth } from './AuthProvider';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,6 +12,7 @@ interface Profile {
   full_name: string | null;
   institute_name: string | null;
   avatar_url: string | null;
+  role?: string | null;
 }
 
 export const Navbar = () => {
@@ -31,7 +32,7 @@ export const Navbar = () => {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('full_name, institute_name, avatar_url')
+        .select('full_name, institute_name, avatar_url, role')
         .eq('user_id', user.id)
         .single();
 
@@ -76,22 +77,43 @@ export const Navbar = () => {
 
           {/* Navigation Links */}
           <div className="flex items-center space-x-4">
-            <Link to="/generate">
-              <Button variant={location.pathname === '/generate' ? 'default' : 'ghost'} size="sm">
-                Generate
-              </Button>
-            </Link>
-            <Link to="/gallery">
-              <Button variant={location.pathname === '/gallery' ? 'default' : 'ghost'} size="sm">
-                Gallery
-              </Button>
-            </Link>
-            <Link to="/leaderboard">
-              <Button variant={location.pathname === '/leaderboard' ? 'default' : 'ghost'} size="sm">
-                <Trophy className="w-4 h-4 mr-1" />
-                Leaderboard
-              </Button>
-            </Link>
+            {/* Show these links only to participants/users */}
+            {(profile?.role === 'user' || profile?.role === 'participant' || !profile?.role) && (
+              <>
+                <Link to="/generate">
+                  <Button variant={location.pathname === '/generate' ? 'default' : 'ghost'} size="sm">
+                    Generate
+                  </Button>
+                </Link>
+                <Link to="/gallery">
+                  <Button variant={location.pathname === '/gallery' ? 'default' : 'ghost'} size="sm">
+                    Gallery
+                  </Button>
+                </Link>
+                <Link to="/leaderboard">
+                  <Button variant={location.pathname === '/leaderboard' ? 'default' : 'ghost'} size="sm">
+                    <Trophy className="w-4 h-4 mr-1" />
+                    Leaderboard
+                  </Button>
+                </Link>
+                <Link to="/join-competition">
+                  <Button variant={location.pathname === '/join-competition' ? 'default' : 'ghost'} size="sm">
+                    <Trophy className="w-4 h-4 mr-1" />
+                    Competitions
+                  </Button>
+                </Link>
+              </>
+            )}
+            
+            {/* Show create button only to hosts/institutes */}
+            {(profile?.role === 'host' || profile?.role === 'institute') && (
+              <Link to="/create-battle">
+                <Button variant="default" size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                  <Sparkles className="w-4 h-4 mr-1" />
+                  Create Competition
+                </Button>
+              </Link>
+            )}
 
             {/* User Profile or Login */}
             {user ? (

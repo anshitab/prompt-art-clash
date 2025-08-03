@@ -1,73 +1,66 @@
-# Welcome to your Lovable project
+# 🎨 Prompt Art Clash
 
-## Project info
+Prompt Art Clash is a full-stack web app where users participate in AI-powered art competitions. Users can submit prompts tied to specific competitions, view real-time galleries of generated submissions, and vote on their favourites.
 
-**URL**: https://lovable.dev/projects/9774a34f-624d-4292-90c0-3f608940729e
+## 🌟 Features
 
-## How can I edit this code?
+- 🔐 User authentication (via Supabase)
+- 🖼️ Competition-wise gallery views for submissions
+- 🗳️ Live voting system (one vote per user per submission)
+- 🏆 Leaderboard based on community voting
+- ⚙️ Admin/user logic managed through SQL roles
+- 🎨 Beautiful UI built with Tailwind CSS and shadcn/ui
 
-There are several ways of editing your application.
+## 🛠️ Tech Stack
 
-**Use Lovable**
+- Frontend: Vite + React + TypeScript
+- Styling: Tailwind CSS + shadcn-ui
+- Icons: lucide-react
+- Backend: Supabase (Database + Auth + RLS)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/9774a34f-624d-4292-90c0-3f608940729e) and start prompting.
+## 📁 Getting Started (Local Development)
 
-Changes made via Lovable will be committed automatically to this repo.
+To run this project locally, follow these steps:
 
-**Use your preferred IDE**
+### Prerequisites
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- Node.js & npm installed (recommend using `nvm`)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Steps
 
-Follow these steps:
+1. Clone the repository:
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+```bash
 git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
+2.	Navigate to the project directory:
 cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+3.	Install dependencies:
+npm install
+4.	Start the development server:
 npm run dev
-```
+Environment Variables
+Create a .env file in the root directory:
+VITE_SUPABASE_URL=your-supabase-url
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+✏️ Editing the Code
+You can edit the project using any modern code editor like VS Code.
+If working locally, just clone the repo, install dependencies, and start the dev server as described above.
+🌐 Deployment
+This is a standard Vite + React project and can be deployed to any static hosting provider like Vercel or Netlify.
+Build the project:
+npm run build
+Preview the production build locally:
+npm run preview
+Then follow your preferred platform’s instructions to deploy.
+🧾 Database Tables (Supabase)
+•	profiles: User profile metadata
+•	submissions: Prompt-based image entries tied to competitions (event_id)
+•	image_votes: Stores user-submission votes (1 per user per submission)
+•	events: Competition metadata (title, description, status)
+•	generated_images: AI-generated image output (optional)
+🧠 Supabase Security Notes
+•	Row-Level Security (RLS) is enforced on votes and submissions
+•	Triggers keep votes_count updated in submissions table
+•	User roles are restricted via SQL policies
 
-**Edit a file directly in GitHub**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/9774a34f-624d-4292-90c0-3f608940729e) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
