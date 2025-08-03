@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from typing import Optional
 
 
-load_dotenv()  # Loads variables from .env into environment
+load_dotenv(dotenv_path="backend/.env") # Loads variables from .env into environment
 HF_TOKEN = os.getenv("HF_TOKEN")
 
 
